@@ -1,16 +1,26 @@
+const FROZEN_PKG = gensym()
 const STATIC_FILE = joinpath(@__DIR__, "fixtures", "static.txt")
+const PkgSpec = typeof(PackageSpec())
+
+# Always add the same version of Documenter to keep manifest files from changing.
+function add_documenter(ps::PkgSpec)
+    ps.uuid == PT.DOCUMENTER_DEP.uuid && (ps.version = v"0.23.4")
+    Pkg.add(ps)
+end
 
 PT.user_view(::Citation, ::Template, ::AbstractString) = Dict("MONTH" => 8, "YEAR" => 2019)
 PT.user_view(::License, ::Template, ::AbstractString) = Dict("YEAR" => 2019)
 
 function test_all(pkg::AbstractString; kwargs...)
     t = tpl(; kwargs...)
-    with_pkg(t, pkg) do pkg
-        pkg_dir = joinpath(t.dir, pkg)
-        foreach(readlines(`git -C $pkg_dir ls-files`)) do f
-            reference = joinpath(@__DIR__, "fixtures", pkg, f)
-            observed = read(joinpath(pkg_dir, f), String)
-            @test_reference reference observed
+    mock(FROZEN_PKG, (Pkg.add, PkgSpec) => add_documenter) do _ad
+        with_pkg(t, pkg) do pkg
+            pkg_dir = joinpath(t.dir, pkg)
+            foreach(readlines(`git -C $pkg_dir ls-files`)) do f
+                reference = joinpath(@__DIR__, "fixtures", pkg, f)
+                observed = read(joinpath(pkg_dir, f), String)
+                @test_reference reference observed
+            end
         end
     end
 end
