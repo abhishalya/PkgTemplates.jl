@@ -44,6 +44,7 @@ end
             GitLabCI(; coverage=false, extra_versions=[v"0.6"]),
             License(; name="ISC"),
             Readme(; inline_badges=true),
+            TagBot(; gpgsign=true),
             Tests(; project=true),
             TravisCI(;
                 coverage=false,
