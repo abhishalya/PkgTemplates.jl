@@ -22,8 +22,8 @@ end
 
     @testset "All plugins" begin
         test_all("AllPlugins"; authors=USER, plugins=[
-            AppVeyor(), CirrusCI(), Citation(), Codecov(), Coveralls(), Develop(),
-            Documenter(), DroneCI(), GitHubActions(), GitLabCI(), TravisCI(),
+            AppVeyor(), CirrusCI(), Citation(), Codecov(), CompatHelper(), Coveralls(),
+            Develop(), Documenter(), DroneCI(), GitHubActions(), GitLabCI(), TravisCI(),
         ])
     end
 
